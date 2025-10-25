@@ -22,3 +22,24 @@ class ReplayBuffer:
         self.data = []
         self.index = 0
         self.size = 0
+
+    def add(self, state, action, reward, next_state, terminal): 
+        """
+        Add a transition to the replay buffer.
+
+        Args: 
+            state: Current state (4, 84, 84)
+            action: Action taken 
+            reward: Reward received
+            next_state: Next state
+            terminal: Whether episode terminated
+        """
+        transition = (state, action, reward, next_state, terminal)
+
+        if self.size < self.capacity: 
+            self.data.append(transition)
+            self.size += 1
+        else: 
+            self.data[self.index] = transition
+
+        self.index = (self.index + 1) % self.capacity
