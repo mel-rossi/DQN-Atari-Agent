@@ -4,12 +4,12 @@ Reinforcement Learning Deep Q-Network Agent Training for COMP 542 Group Project
 ## Group Members (Collaborators)
 - [Mel Rossi Rodrigues](https://github.com/mel-rossi)
 - [Maria Alexandra Lois Peralejo](https://github.com/MariaAlexandraPeralejo)
-- Angel Cortes Gildo
-- Colby Snook
+- [Angel Cortes Gildo](https://github.com/angcortes)
+- [Colby Snook](https://github.com/colbysnook)
 
 ## Environment Setup
 
-- Inside project directory run the following commands:
+Inside project directory run the following commands:
   
 ```bash
 # Create virtual enviroment (do this only once)
@@ -22,3 +22,4 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 ```
+You can deactivate the enviroment by simply running `deactivate` in shell. 
