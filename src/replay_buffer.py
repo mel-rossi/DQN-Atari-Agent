@@ -89,4 +89,14 @@ class ReplayBuffer:
             np.array(terminals, dtype=np.float32)
         )
 
+    # Returns size of buffer
+    def __len__(self):
+        return self.size
+
+    # Confirm buffer is ready for training
+    def is_ready(self, batch_size):
+        """ Check if buffer has enough samples for training. """
+
+        return self.size >= batch_size
+
 
