@@ -33,7 +33,7 @@ print("--- Model Loaded. Starting Game... ---")
 # --- 3. Run the Game Loop ---
 obs = env.reset()
 episodes_played = 0
-while episodes_played < 4: # Play 10 games then stop
+while episodes_played < 3: # Play 3 games then stop
     # Get the agent's action (deterministic=True means no random exploration)
     action, _states = model.predict(obs, deterministic=True)
 
