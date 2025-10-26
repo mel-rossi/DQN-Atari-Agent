@@ -14,7 +14,7 @@ from stable_baselines3.common.callbacks import EvalCallback
 ENV_ID = "PongNoFrameskip-v4"
 LOG_DIR = "./tensorboard_logs/"
 MODEL_DIR = "./models/"
-BEST_MODEL_PATH = f"{MODEL_DIR}/dqn_pong_best_model.zip"
+BEST_MODEL_PATH = f"{MODEL_DIR}/best_model" 
 
 # Device
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
@@ -22,8 +22,8 @@ DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
 # Training Hyperparameters
 TOTAL_TIMESTEPS = 2_000_000
 LEARNING_RATE = 1e-4
-BUFFER_SIZE = 1_000_000
-LEARNING_STARTS = 100_000
+BUFFER_SIZE = 200_000
+LEARNING_STARTS = 50_000
 BATCH_SIZE = 32
 GAMMA = 0.99
 TRAIN_FREQ = 4
@@ -40,18 +40,14 @@ print("--- Initializing Environment ---")
 
 # Create 4 parallel environments for training
 vec_env = make_atari_env(ENV_ID, n_envs=4, seed=0)
-# [Project Writeup, Section 4.1: Data]
-# stacks 4 frames gives the agent a sense of motion.
 vec_env = VecFrameStack(vec_env, n_stack=4)
 
 # Create a separate, single environment for evaluation
 eval_env = make_atari_env(ENV_ID, n_envs=1, seed=42)
 eval_env = VecFrameStack(eval_env, n_stack=4)
 
+
 # --- 3. Setup Callback ---
-# [Project Writeup, Section 4.2: Methodology]
-# This callback validates the model every EVAL_FREQ steps
-# and saves the best-performing one.
 eval_callback = EvalCallback(eval_env,
                              best_model_save_path=MODEL_DIR,
                              log_path=LOG_DIR,
@@ -59,11 +55,12 @@ eval_callback = EvalCallback(eval_env,
                              n_eval_episodes=N_EVAL_EPISODES,
                              deterministic=True,
                              render=False)
+                            
 
 # --- 4. Define the Model ---
 print("--- Defining DQN Model ---")
 model = DQN(
-    "CnnPolicy",              # "CnnPolicy" for image inputs
+    "CnnPolicy",
     vec_env,
     learning_rate=LEARNING_RATE,
     buffer_size=BUFFER_SIZE,
@@ -78,16 +75,23 @@ model = DQN(
     device=DEVICE
 )
 
+# --- 5. Train the Model ---
+print("--- Starting Model Training ---")
+model.learn(
+    total_timesteps=TOTAL_TIMESTEPS,
+    callback=eval_callback,
+    progress_bar=True
+)
 print("--- Training Complete ---")
 
 # --- 6. Evaluate the *Best* Trained Model ---
-# [Project Writeup, Section 4.3: Results]
 print("--- Evaluating Best Model ---")
-# Load the best model saved by the callback
+# The .load() function will automatically add ".zip" to BEST_MODEL_PATH
+# It will now correctly look for "./models/best_model.zip"
 model = DQN.load(BEST_MODEL_PATH, device=DEVICE)
 
 mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=N_EVAL_EPISODES)
 
-print(f"FINAL EVALUATION")
+print(f"=== FINAL EVALUATION ===")
 print(f"Mean reward: {mean_reward:.2f} +/- {std_reward:.2f}")
 print(f"==========================")
