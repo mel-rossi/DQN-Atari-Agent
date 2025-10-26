@@ -73,3 +73,29 @@ class DQNNetwork(keras.Model):
         # (raw values are used by DQN for policy and TD targets)
         self.dense2 = layers.Dense(num_actions, name = 'fc2')
 
+    # Forward pass and input handling 
+    def call(self, state):
+        """
+        Forward pass through the network. 
+
+        Args: 
+            state: Input state tensor (batch_size, 4, 84, 84) or (batch_size, 84, 84, 4)
+
+        Returns: 
+            Q-values for each action 
+        """
+
+        # Note: TensorFlow expects (batch, height, width, channels)
+        # If input is (batch, channels, height, width), we need to transpose 
+        if state.shape[1] == 4: # channels first 
+            state = tf.transpose(state, [0, 2, 3, 1])
+
+        # Layer application sequence
+        x = self.conv1(state)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.flatten(x)
+        x = self.dense1(x)
+        q_values = self.dense2(x)
+
+        return q_values
