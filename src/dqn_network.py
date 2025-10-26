@@ -108,3 +108,20 @@ class DQNNetwork(keras.Model):
         self.build((None,) + input_shape)
 
         return self
+
+# Factory function 
+def create_dqn_network(num_actions): 
+    """ 
+    Factory function to cretae a DQN network.
+
+    Args: 
+        num_actions: Number of valid actions 
+
+    Returns: 
+        DQNNetwork instance
+    """
+
+    network = DQNNetwork(num_actions) # instantiates DQNNetwork
+    network.build_model() # initializes network
+
+    return network # ready-to-use model
