@@ -99,3 +99,12 @@ class DQNNetwork(keras.Model):
         q_values = self.dense2(x)
 
         return q_values
+
+    # Model building convenience
+    def build_model(self, input_shape(84, 84, 4)):
+        """ Build the model by calling it once. """
+
+        # Initializes model's weights by calling self.build with a defined input shape
+        self.build((None,) + input_shape)
+
+        return self
