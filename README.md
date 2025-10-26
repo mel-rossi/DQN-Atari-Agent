@@ -23,3 +23,16 @@ pip install -r requirements.txt
 
 ```
 You can deactivate the enviroment by simply running `deactivate` in shell. 
+
+
+## Check logs
+
+Inside project directory run this command:
+
+```bash
+# Make sure you have activated venv
+# and pip installed the requirements.txt
+#check logs
+tensorboard --logdir ./tensorboard_logs/ 
+
+```
