@@ -33,3 +33,61 @@ TARGET_UPDATE_INTERVAL = 1000
 # Evaluation
 EVAL_FREQ = 10_000
 N_EVAL_EPISODES = 10
+
+# --- 2. Create Environments ---
+print(f"--- Using device: {DEVICE} ---")
+print("--- Initializing Environment ---")
+
+# Create 4 parallel environments for training
+vec_env = make_atari_env(ENV_ID, n_envs=4, seed=0)
+# [Project Writeup, Section 4.1: Data]
+# stacks 4 frames gives the agent a sense of motion.
+vec_env = VecFrameStack(vec_env, n_stack=4)
+
+# Create a separate, single environment for evaluation
+eval_env = make_atari_env(ENV_ID, n_envs=1, seed=42)
+eval_env = VecFrameStack(eval_env, n_stack=4)
+
+# --- 3. Setup Callback ---
+# [Project Writeup, Section 4.2: Methodology]
+# This callback validates the model every EVAL_FREQ steps
+# and saves the best-performing one.
+eval_callback = EvalCallback(eval_env,
+                             best_model_save_path=MODEL_DIR,
+                             log_path=LOG_DIR,
+                             eval_freq=EVAL_FREQ,
+                             n_eval_episodes=N_EVAL_EPISODES,
+                             deterministic=True,
+                             render=False)
+
+# --- 4. Define the Model ---
+print("--- Defining DQN Model ---")
+model = DQN(
+    "CnnPolicy",              # "CnnPolicy" for image inputs
+    vec_env,
+    learning_rate=LEARNING_RATE,
+    buffer_size=BUFFER_SIZE,
+    learning_starts=LEARNING_STARTS,
+    batch_size=BATCH_SIZE,
+    gamma=GAMMA,
+    train_freq=TRAIN_FREQ,
+    gradient_steps=GRADIENT_STEPS,
+    target_update_interval=TARGET_UPDATE_INTERVAL,
+    verbose=1,
+    tensorboard_log=LOG_DIR,
+    device=DEVICE
+)
+
+print("--- Training Complete ---")
+
+# --- 6. Evaluate the *Best* Trained Model ---
+# [Project Writeup, Section 4.3: Results]
+print("--- Evaluating Best Model ---")
+# Load the best model saved by the callback
+model = DQN.load(BEST_MODEL_PATH, device=DEVICE)
+
+mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=N_EVAL_EPISODES)
+
+print(f"FINAL EVALUATION")
+print(f"Mean reward: {mean_reward:.2f} +/- {std_reward:.2f}")
+print(f"==========================")
