@@ -1,7 +1,3 @@
-# Main training script. Run to train agent. 
-# Creates the game enviroment, and DQN agent, then runs thousands of game episodes
-# where teh agent learns by playing. 
-# Saves checkpoints every 500 episodes and graphs to show how well it's learning.
 import os 
 import numpy as np 
 import matplot.lib.pyplot as plt
@@ -9,6 +5,9 @@ from atari_processing import make_atari_env
 from dqn_agent import DQNAgent 
 import time 
 
+# Full training loop: 
+# environment iteraction, replay buffer filling, training, 
+# evaluation, logging, and checkpointing.
 def train_qn(
     env_name = 'ALE/Pong-v5', 
     num_iterations = 10000, 
@@ -31,14 +30,14 @@ def train_qn(
         log_period: Log progress every N iterations
     """
 
-    # Create directories 
+    # Create directories (saving checkpoints & logs) 
     os.makedirs('checkpoints', exist_ok = True)
     os.makedirs('logs', exist_okay = True) 
 
     # Create environment
     print("Creating environment...")
-    env = make_atari_env(env_name)
-    num_actions = env.action_space.n
+    env = make_atari_env(env_name) # wrapped Atari env with preprocessing
+    num_actions = env.action_space.n # number of discrete actions
 
     print(f"Environment: {env_name}")
     print(f"Number of actions: {num_actions}")
@@ -47,25 +46,25 @@ def train_qn(
     # Create agent 
     print("\nCreating DQN agent...")
     agent = DQNAgent(
-        num_actions=num_actions,
-        observation_shape=env.observation_space.shape,
-        gamma=0.99,
-        min_replay_history=50000,
-        update_period=4,
-        target_update_period=10000,
-        epsilon_train=0.01,
-        epsilon_eval=0.001,
-        epsilon_decay_period=1000000,
-        replay_capacity=1000000,
-        batch_size=32,
-        learning_rate=0.00025
+        num_actions = num_actions,
+        observation_shape = env.observation_space.shape,
+        gamma = 0.99,
+        min_replay_history = 50000,
+        update_period = 4,
+        target_update_period = 10000,
+        epsilon_train = 0.01,
+        epsilon_eval = 0.001,
+        epsilon_decay_period = 1000000,
+        replay_capacity = 1000000,
+        batch_size = 32,
+        learning_rate = 0.00025
     )
 
     # Training metrics 
-    episode_rewards = []
-    episode_lengths = []
-    training_losses = []
-    evaluation_rewards = []
+    episode_rewards = [] # total reward per episode
+    episode_lengths = [] # steps per episode
+    training_losses = [] # mean loss per episode
+    evaluation_rewards = [] # evaluation results over time
 
     print("\n" + "="*70)
     print("Starting training...")
@@ -76,15 +75,15 @@ def train_qn(
 
     while iteration < num_iterations:
         # Training episode
-        state, _ = env.reset()
+        state, _ = env.reset() # reset environment
         episode_reward = 0
         episode_length = 0
         episode_losses = []
         
-        agent.set_eval_mode(False)
+        agent.set_eval_mode(False) # training mode
 
         for step in range(max_steps_per_episode):
-            # Select action 
+            # Select (greedy-epsilon action) 
             action = agent.select_action(state)
 
             # Take action in environment
@@ -99,6 +98,7 @@ def train_qn(
 
             # Train agent 
             loss = agent.train_step()
+
             if loss is not None:
                 episode_losses.append(loss)
 
@@ -115,6 +115,7 @@ def train_qn(
         # Record metrics 
         episode_rewards.append(episode_reward)
         episode_lengths.append(episode_length)
+
         if episode_losses:
             training_losses.append(np.mean(episode_losses))
         
@@ -142,7 +143,7 @@ def train_qn(
             print(f"Evaluation reward: {eval_reward:.2f}")
             print(f"{'='*70}\n")
 
-        # Save checkpoint 
+        # Checkpointing and plotting
         if iteration % checkpoint_period == 0:
             agent.save('checkpoints', iteration)
             plot_training_progress(
@@ -166,7 +167,8 @@ def train_qn(
     
     return agent
 
-    def evaluate_agent(agent, env_name, num_episodes):
+# Agent evaluation: runs agent in eval mode for multiple episodes and computes average reward.
+def evaluate_agent(agent, env_name, num_episodes):
     """
     Evaluate agent performance.
     
@@ -179,8 +181,8 @@ def train_qn(
         Average reward over evaluation episodes
     """
 
-    eval_env = make_atari_env(env_name)
-    agent.set_eval_mode(True)
+    eval_env = make_atari_env(env_name) # fresh eval environment
+    agent.set_eval_mode(True) # use eval epsilon
     
     eval_rewards = []
     
@@ -190,7 +192,7 @@ def train_qn(
         done = False
 
         while not done:
-            action = agent.select_action(state)
+            action = agent.select_action(state) # greedy or low-epsilon
             state, reward, terminated, truncated, _ = eval_env.step(action)
             done = terminated or truncated
             episode_reward += reward
@@ -200,11 +202,13 @@ def train_qn(
     eval_env.close()
     agent.set_eval_mode(False)
     
-    return np.mean(eval_rewards)
+    return np.mean(eval_rewards) # average reward across epsiodes
 
+# Visualizes learning curves and saves them to disk
 def plot_training_progress(rewards, losses, eval_rewards, iteration):
     """Plot training progress."""
-    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+
+    fig, axes = plt.subplots(2, 2, figsize = (15, 10))
     
     # Plot episode rewards
     axes[0, 0].plot(rewards, alpha=0.6)
@@ -253,7 +257,7 @@ def plot_training_progress(rewards, losses, eval_rewards, iteration):
         axes[1, 1].grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig(f'logs/training_progress_{iteration}.png', dpi=150)
+    plt.savefig(f'logs/training_progress_{iteration}.png', dpi=150) # save figure
     plt.close()
 
 if __name__ == '__main__':
