@@ -7,7 +7,7 @@ from src.dqn_agent import DQNAgent
 def play_game(
     checkpoint_dir = 'checkpoints',
     iteration = 5000,
-    env_name = 'ALE/Breakout-v5',
+    env_name = 'ALE/Pong-v5',
     num_episodes = 5,
     render = True
 ):
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     play_game(
         checkpoint_dir='checkpoints',
         iteration=5000,  # Change this to match your checkpoint
-        env_name='ALE/Breakout-v5',
+        env_name='ALE/Pong-v5',
         num_episodes=5,
         render=True
     )
