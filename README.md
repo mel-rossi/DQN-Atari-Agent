@@ -23,3 +23,35 @@ pip install -r requirements.txt
 
 ```
 You can deactivate the enviroment by simply running `deactivate` in shell. 
+
+You can check if the setup is correct by running:
+```bash
+python test.py
+```
+It should return: 
+`['Pong-v0', 'Pong-v4', 'PongNoFrameskip-v0', 'PongNoFrameskip-v4', 'ALE/Pong-v5']`
+
+## Train & Test 
+⚠ Configuration Switching hasn't been implemented yet. 
+
+Full training: 
+```bash
+python src/train.py
+```
+
+For easy configuration switching:
+```bash
+python train_with_config.py --config <mode>
+```
+- Where `<mode>` is the training mode: `default`, `test`, or `heavy`
+
+Try Different Games : 
+```bash
+python train_with_config.py --config <mode> env ALE/<env_name>
+```
+- Where `<env_name>` is the name of the Atari Environment / Game
+
+Test Trained Agent: 
+```bash
+python play.py
+```
