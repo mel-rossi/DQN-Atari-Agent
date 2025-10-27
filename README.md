@@ -1,6 +1,8 @@
 # RL-Deep-Q-Net-Atari-Agent
 Reinforcement Learning Deep Q-Network Agent Training for COMP 542 Group Project
 
+Note: This Directory is heavy with ML Agent Checkpoints and Logs
+
 ## Group Members (Collaborators)
 - [Mel Rossi Rodrigues](https://github.com/mel-rossi)
 - [Maria Alexandra Lois Peralejo](https://github.com/MariaAlexandraPeralejo)
@@ -9,46 +11,43 @@ Reinforcement Learning Deep Q-Network Agent Training for COMP 542 Group Project
 
 ## Environment Setup
 
-Inside project directory run the following commands:
+Inside your project directory run the following command:
   
 ```bash
-# Create virtual enviroment (do this only once)
-python3 -m venv venv
-
-# Activate the virtual enviroment (every time you open a new terminal or its deactivated)
-source venv/bin/activate
-
-# Install requirements (if you haven't yet)
-pip install -r requirements.txt
-
+bash setup.sh # Run this only once (auto activates virtual environment)
 ```
+Run this instead if you're on zsh shell: `zsh setup.sh`
+
+If you've already ran `setup.sh`, run this to activate the virtual environment whenever it is deactivated.
+```bash
+source venv/bin/activate
+```
+
 You can deactivate the enviroment by simply running `deactivate` in shell. 
 
-## Download model and watch play
+Note: The virtual environment will be automatically deactivated if you close or refresh the terminal.
 
-1. download the model you want from shared google drive
-2. Make there is or create a models directory(folder) within the project folder 
-3. Place the model within the folder (don't unzip)
-4. Within watchPlay.py make sure the MODEL_PATH has the correct model
-5. Inside project directory run this command:
+## Train & Watch the Model Play
 
-```bash
-  # Make sure you have activated venv
-  # and pip installed the requirements.txt
-  python3 src/watchPlay.py 
+Note: Make sure you've completed the environment set up and it is activated
+
+1. Train the model
+```
+python src/train.py
+```
+
+2. Watch the model play
+```
+python src/play.py
 ```
 
 ## Check logs
 
-1. download the zipped tensorboard_logs from shared google drive folder
-2. unzip and place the folder within our project directory
-3. Inside project directory run this command:
+Note: Make sure you've completed the environment set up and it is activated
+
+1. Inside project directory run this command:
 
 ```bash
-# Make sure you have activated venv
-# and pip installed the requirements.txt
-#check logs
-tensorboard --logdir ./tensorboard_logs/ 
-
+tensorboard --logdir ./logs/ 
 ```
-4. Follow the local host link to see all the reports
+2. Follow the local host link to see all the reports
