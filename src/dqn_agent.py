@@ -1,7 +1,7 @@
 import tensorflow as tf 
 import numpy as np 
-from dqn_network import create_dqn_network
-from replay_buffer import ReplayBuffer
+from .dqn_network import create_dqn_network
+from .replay_buffer import ReplayBuffer
 
 # Agent that implements Deep Q-Learning
 class DQNAgent: 
@@ -12,8 +12,8 @@ class DQNAgent:
     # Sets up network, optimizer, replay buffer, and epsilon schedule
     def __init__(
         self, 
-        num_actions, 
-        observation_shape(84, 84, 4), 
+        num_actions,
+        observation_shape = (84, 84, 4),
         gamma = 0.99,
         update_horizon = 1, 
         min_replay_history = 50000, 
@@ -104,7 +104,7 @@ class DQNAgent:
                 return self.epsilon_train
 
             else: 
-                steps_left = self_epsilon_decay_period + self.min_replay_history - step
+                steps_left = self.epsilon_decay_period + self.min_replay_history - step
                 bonus = (1.0 - self.epsilon_train) * steps_left / self.epsilon_decay_period
                 return self.epsilon_train + bonus 
 
@@ -131,11 +131,11 @@ class DQNAgent:
         epsilon = self._epsilon_schedule(self.training_steps) # get current epsilon
 
         if np.random.random() < epsilon: # probability epsilon -> random action 
-            return np.random.randit(0, self.num_actions)
+            return np.random.randint(0, self.num_actions)
 
         else: # forward pass through online network
             # Add batch dimension and get Q-values
-            state_batch = np.expand_dims(state, axis = 0).astype(np.float34) / 255.0
+            state_batch = np.expand_dims(state, axis = 0).astype(np.float32) / 255.0
             q_values = self.online_network(state_batch)
             
             return tf.argmax(q_values[0]).numpy()
@@ -177,7 +177,7 @@ class DQNAgent:
 
         # Update target network periodically 
         if self.training_steps % self.target_update_period == 0:
-            self._sync_target_network()
+            self.sync_target_network()
             print(f"Target network updated at step {self.training_steps}")
         
         return loss
@@ -215,7 +215,7 @@ class DQNAgent:
             q_values = self.online_network(states)
 
             # Select Q-values for actions taken 
-            one_hot_actions = tf.one_hot(actions, self.num_actions)
+            one_hot_actions = tf.one_hot(tf.cast(actions, tf.int32), self.num_actions)
             q_values_selected = tf.reduce_sum(q_values * one_hot_actions, axis=1)
 
             # Compute Huber loss 
@@ -268,10 +268,10 @@ class DQNAgent:
         """ Save model checkpoint. """
 
         self.online_network.save_weights(
-            f'{checkpoint_dir}/online_network_{iteration}.h5'
+            f'{checkpoint_dir}/online_network_{iteration}.weights.h5'
         )
         self.target_network.save_weights(
-            f'{checkpoint_dir}/target_network_{iteration}.h5'
+            f'{checkpoint_dir}/target_network_{iteration}.weights.h5'
         )
         print(f"Model saved at iteration {iteration}")
 
@@ -279,10 +279,10 @@ class DQNAgent:
         """ Load model checkpoint. """
 
         self.online_network.load_weights(
-            f'{checkpoint_dir}/online_network_{iteration}.h5'
+            f'{checkpoint_dir}/online_network_{iteration}.weights.h5'
         )
         self.target_network.load_weights(
-            f'{checkpoint_dir}/target_network_{iteration}.h5'
+            f'{checkpoint_dir}/target_network_{iteration}.weights.h5'
         )
         print(f"Model loaded from iteration {iteration}")
 

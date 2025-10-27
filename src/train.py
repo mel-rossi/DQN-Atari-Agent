@@ -1,14 +1,14 @@
 import os 
 import numpy as np 
-import matplot.lib.pyplot as plt
-from atari_processing import make_atari_env
+import matplotlib.pyplot as plt
+from atari_preprocessing import make_atari_env
 from dqn_agent import DQNAgent 
 import time 
 
 # Full training loop: 
 # environment iteraction, replay buffer filling, training, 
 # evaluation, logging, and checkpointing.
-def train_qn(
+def train_dqn(
     env_name = 'ALE/Pong-v5', 
     num_iterations = 10000, 
     max_steps_per_episode = 27000, 
@@ -32,7 +32,7 @@ def train_qn(
 
     # Create directories (saving checkpoints & logs) 
     os.makedirs('checkpoints', exist_ok = True)
-    os.makedirs('logs', exist_okay = True) 
+    os.makedirs('logs', exist_ok = True) 
 
     # Create environment
     print("Creating environment...")
@@ -155,7 +155,7 @@ def train_qn(
 
     # Final save
     agent.save('checkpoints', iteration)
-        plot_training_progress(
+    plot_training_progress(
         episode_rewards, 
         training_losses, 
         evaluation_rewards,
@@ -263,7 +263,7 @@ def plot_training_progress(rewards, losses, eval_rewards, iteration):
 if __name__ == '__main__':
     # Train the agent
     train_dqn(
-        env_name='ALE/Breakout-v5',
+        env_name='ALE/Pong-v5',
         num_iterations=5000,
         max_steps_per_episode=27000,
         evaluation_period=100,

@@ -39,9 +39,9 @@ class DQNNetwork(keras.Model):
         # (captures mid-level patterns)
         self.conv2 = layers.Conv2D(
             64,
-            kernal_size = 4,
+            kernel_size = 4,
             strides = 2,
-            activation = 'relu'
+            activation = 'relu',
             name = 'conv2'
         )
 
@@ -50,8 +50,8 @@ class DQNNetwork(keras.Model):
         self.conv3 = layers.Conv2D(
             64,
             kernel_size = 3, 
-            strides = 1
-            activation = 'relu'
+            strides = 1,
+            activation = 'relu',
             name = 'conv3'
         )
 
@@ -96,7 +96,7 @@ class DQNNetwork(keras.Model):
         return q_values
 
     # Model building convenience
-    def build_model(self, input_shape(84, 84, 4)):
+    def build_model(self, input_shape = (84, 84, 4)):
         """ Build the model by calling it once. """
 
         # Initializes model's weights by calling self.build with a defined input shape

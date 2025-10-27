@@ -60,7 +60,7 @@ class ReplayBuffer:
         # Pick random indices - Selects n (batch_size) random positions from buffer
         indices = np.random.choice(self.size, batch_size, replace=False)
 
-        states, actions, rewards, next_sattes, terminals = [], [], [], [], []
+        states, actions, rewards, next_states, terminals = [], [], [], [], []
 
         # Extract transitions 
         for idx in indices: 

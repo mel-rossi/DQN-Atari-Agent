@@ -1,7 +1,7 @@
 import numpy as np
 import time
-from atari_preprocessing import make_atari_env
-from dqn_agent import DQNAgent
+from src.atari_preprocessing import make_atari_env
+from src.dqn_agent import DQNAgent
 
 # Sets up Atari environment for evaluation
 def play_game(
@@ -30,7 +30,7 @@ def play_game(
         import gymnasium as gym
         render_env = gym.make(env_name, render_mode='human') # game window visible
 
-        from atari_preprocessing import NoopResetEnv, AtariPreprocessing, FrameStack
+        from src.atari_preprocessing import NoopResetEnv, AtariPreprocessing, FrameStack
         render_env = NoopResetEnv(render_env, noop_max=30)
         render_env = AtariPreprocessing(render_env, frame_skip=4, screen_size=84)
         render_env = FrameStack(render_env, k=4)
