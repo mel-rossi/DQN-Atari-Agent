@@ -36,7 +36,7 @@ It should return:
 
 Full training: 
 ```bash
-python src/train.py
+python -m src.train
 ```
 
 For easy configuration switching:

@@ -1,9 +1,19 @@
 import os 
 import numpy as np 
 import matplotlib.pyplot as plt
-from atari_preprocessing import make_atari_env
-from dqn_agent import DQNAgent 
-import time 
+from .atari_preprocessing import make_atari_env
+from .dqn_agent import DQNAgent 
+import time
+
+# Detect latest checkpoint iteration
+def get_latest_checkpoint(checkpoint_dir):
+    import os, re
+    files = os.listdir(checkpoint_dir)
+    pattern = r'online_network_(\d+)\.weights\.h5'
+    iterations = [int(re.search(pattern, f).group(1)) for f in files if re.search(pattern, f)]
+    return max(iterations) if iterations else 0
+
+start_iteration = get_latest_checkpoint('checkpoints')
 
 # Full training loop: 
 # environment iteraction, replay buffer filling, training, 
@@ -11,8 +21,8 @@ import time
 def train_dqn(
     env_name = 'ALE/Pong-v5', 
     num_iterations = 10000, 
-    max_steps_per_episode = 27000, 
-    evaluation_period = 100, 
+    max_steps_per_episode = 1000, # Cap episode length: 27000 -> 1000 
+    evaluation_period = 500, # Reduce evaluation frequency: 100 -> 500 
     num_eval_episodes = 10, 
     checkpoint_period = 500, 
     log_period = 10
@@ -25,7 +35,7 @@ def train_dqn(
         num_iterations: Number of training iterations (episodes) 
         max_steps_per_episode: Maximum steps per episode
         evaluation_period: Evaluate every N iterations
-        num_eval_episodes: Number of episodes for evaluation
+        num_eval_episodes Number of episodes for evaluation
         checkpoint_period: Save checkpoint every N iterations
         log_period: Log progress every N iterations
     """
@@ -56,9 +66,30 @@ def train_dqn(
         epsilon_eval = 0.001,
         epsilon_decay_period = 1000000,
         replay_capacity = 1000000,
-        batch_size = 32,
+        batch_size = 256, # Increased batch size : 32 -> 128 / 256
         learning_rate = 0.00025
     )
+
+    # Load latest checkpoint if available 
+    start_iteration = get_latest_checkpoint('checkpoints')
+    if start_iteration > 0:
+        print(f"\nResuming from checkpoint at iteration {start_iteration}...")
+        agent.load('checkpoints', start_iteration)
+
+        # Load replay buffer
+        replay_path = (f'checkpoints/replay_buffer_{start_iteration}.pkl')
+        if os.path.exists(replay_path):
+            agent.load_replay_buffer(replay_path, 'checkpoints', iteration)
+            print(f"Replay buffer loaded from {replay_path}")
+        else:
+            print("Replay buffer not found — training will resume with empty buffer.")
+
+    else:
+        print("\nStarting fresh training...")
+
+    # Start training from latest iteration
+    iteration = start_iteration
+    total_steps = 0
 
     # Training metrics 
     episode_rewards = [] # total reward per episode
@@ -69,9 +100,6 @@ def train_dqn(
     print("\n" + "="*70)
     print("Starting training...")
     print("="*70)
-
-    iteration = 0
-    total_steps = 0
 
     while iteration < num_iterations:
         # Training episode
@@ -145,7 +173,9 @@ def train_dqn(
 
         # Checkpointing and plotting
         if iteration % checkpoint_period == 0:
+            
             agent.save('checkpoints', iteration)
+            agent.save_replay_buffer(f'checkpoints/replay_buffer_{iteration}.pkl', 'checkpoints', iteration)
             plot_training_progress(
                 episode_rewards, 
                 training_losses, 
@@ -155,6 +185,7 @@ def train_dqn(
 
     # Final save
     agent.save('checkpoints', iteration)
+    agent.save_replay_buffer(f'checkpoints/replay_buffer_{iteration}.pkl', 'checkpoints', iteration)
     plot_training_progress(
         episode_rewards, 
         training_losses, 
@@ -264,9 +295,9 @@ if __name__ == '__main__':
     # Train the agent
     train_dqn(
         env_name='ALE/Pong-v5',
-        num_iterations=5000,
-        max_steps_per_episode=27000,
-        evaluation_period=100,
+        num_iterations=start_iteration + 5000, # Updated (dynamic)
+        max_steps_per_episode=1000, # Updated
+        evaluation_period=500, # Updated
         num_eval_episodes=10,
         checkpoint_period=500,
         log_period=10

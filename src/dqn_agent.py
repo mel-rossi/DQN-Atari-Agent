@@ -264,6 +264,27 @@ class DQNAgent:
 
     # Handle checkpointing
 
+    import pickle 
+
+    # Save replay buffer to disk
+    def save_replay_buffer(self, replay_path, checkpoint_dir, iteration):
+        """ Save replay buffer to disk. """
+
+        with open(f'{checkpoint_dir}/training_steps_{iteration}.pkl', 'wb') as f:
+            pickle.dump(self.training_steps, f)
+
+
+    # Load replay buffer from disk
+    def load_replay_buffer(self, replay_path, checkpoint_dir, iteration):
+        """ Load replay buffer from disk. """
+
+        try:
+            with open(f'{checkpoint_dir}/training_steps_{iteration}.pkl', 'rb') as f:
+                self.training_steps = pickle.load(f)
+        except FileNotFoundError:
+            print("Training step counter not found — starting from 0.")
+
+
     def save(self, checkpoint_dir, iteration):
         """ Save model checkpoint. """
 
@@ -286,4 +307,5 @@ class DQNAgent:
         )
         print(f"Model loaded from iteration {iteration}")
 
-
+        # Force sync
+        self.sync_target_network()
