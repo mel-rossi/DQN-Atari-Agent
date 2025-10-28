@@ -1,8 +1,6 @@
 # RL-Deep-Q-Net-Atari-Agent
 Reinforcement Learning Deep Q-Network Agent Training for COMP 542 Group Project
 
-Note: This Directory is heavy with ML Agent Checkpoints and Logs
-
 ## Group Members (Collaborators)
 - [Mel Rossi Rodrigues](https://github.com/mel-rossi)
 - [Maria Alexandra Lois Peralejo](https://github.com/MariaAlexandraPeralejo)
