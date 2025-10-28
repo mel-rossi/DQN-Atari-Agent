@@ -48,7 +48,7 @@ MODEL_DIR = "./models/"
 BEST_MODEL_PATH = f"{MODEL_DIR}/best_model"
 
 # Create model directory if missing 
-os.makedirs(MODEL_DIR, exist_ok=True)
+os.makedirs(MODEL_DIR, exist_ok = True)
 
 # Selects compute device: mps (Metal Performance Shaders - Apple GPU) or cpu 
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu" 
@@ -112,7 +112,8 @@ if args.load_model is None:
         target_update_interval = TARGET_UPDATE_INTERVAL, 
         verbose = 1,
         tensorboard_log = LOG_DIR, 
-        device = DEVICE
+        device = DEVICE,
+        optimize_memory_usage = True
     )
 
 else: 
@@ -152,13 +153,16 @@ print("--- Evaluating Best Model ---")
 
 # Load best-performing model 
 # a.k.a. 'best_model.zip' saved by EvalCallback during the *latest* run
-model = DQN.load(BEST_MODEL_PATH, device = DEVICE)
+model = DQN.load(
+    BEST_MODEL_PATH, 
+    device = DEVICE
+)
 
 # Run evaluation episodes
 mean_reward, std_reward = evaluate_policy(
-        model, 
-        eval_env, 
-        n_eval_episodes = N_EVAL_EPISODES
+    model, 
+    eval_env, 
+    n_eval_episodes = N_EVAL_EPISODES
 )
 
 print(f"=== FINAL EVALUATION ===")
