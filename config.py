@@ -1,18 +1,10 @@
-# Stores different training configurations -
-# A config file with three presets: 'test' (quick testing), 'default' (normal training), 
-# and 'heavy' (serious long training). 
-# Contains all hyperparameters like learning rate, epsilon decay, replay buffer size, etc.
-# Makes it easy to switch between different training setups without editing code. 
-
-
-
-# config.py
-# File to store all project hyperparameters and settings
 import torch
+
+# File to store all project hyperparameters and settings
 
 # Environment and Paths 
 ENV_ID = "PongNoFrameskip-v4"
-LOG_DIR = "./tensorboard_logs/"
+LOG_DIR = "./logs/"
 MODEL_DIR = "./models/"
 BEST_MODEL_PATH = f"{MODEL_DIR}/dqn_pong_best_model.zip"
 
