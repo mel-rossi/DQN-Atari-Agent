@@ -2,7 +2,7 @@
 venv/
 
 # Generated TensorBoard logs
-tensorboard_logs/
+logs/
 
 # Saved models (handle via Git LFS or external storage)
 models/
