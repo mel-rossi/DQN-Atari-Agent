@@ -132,7 +132,7 @@ if args.load_model is None:
 
 else: 
     print(f"--- Loading Existing Model from: {args.load_model} ---")
-    load_path = args.load_model.replace('.zip', '')
+    load_path = args.load_model.removesuffix('.zip')
 
     # Loads saved model checkpoint
     model = DQN.load(
