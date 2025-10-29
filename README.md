@@ -1,4 +1,4 @@
-# DQNet-Atari-Agent
+# DQN-Atari-Agent
 Reinforcement Learning Deep Q-Network Agent Training for COMP 542 Group Project
 
 ## Group Members (Collaborators)
@@ -26,7 +26,7 @@ You can deactivate the enviroment by simply running `deactivate` in shell.
 
 You can check if the setup is correct by running:
 ```bash
-python test.py
+python src/test.py
 ```
 It should return: 
 `['Pong-v0', 'Pong-v4', 'PongNoFrameskip-v0', 'PongNoFrameskip-v4', 'ALE/Pong-v5']`
