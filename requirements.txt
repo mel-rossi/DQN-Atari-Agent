@@ -1,8 +1,17 @@
-tensorflow
-dopamine-rl
+# Core ML and RL libraries
+torch
+stable-baselines3[extra]
+
+
+# Environment
 gymnasium[atari]
 gymnasium[accept-rom-license]
-numpy
+
+# Data Analysis & Plotting
+pandas                     
 matplotlib
+tensorboard                
+
+# Other utilities
+numpy
 opencv-python
-gin-config
