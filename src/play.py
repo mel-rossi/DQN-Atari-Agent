@@ -23,7 +23,7 @@ from stable_baselines3.common.env_util import make_atari_env
 # --- Configuration ---
 
 # Should match training (train.py)
-ENV_ID = "PongNoFrameskip-v4" 
+ENV_ID = "FreewayNoFrameskip-v4" 
 MODEL_PATH = "./models/best_model"
 N_STACK = 4
 

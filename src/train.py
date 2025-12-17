@@ -25,7 +25,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 # -- 1. Argument Parsing ---
 
-parser = argparse.ArgumentParser(description="Train / resume training DQN agent for Pong.")
+parser = argparse.ArgumentParser(description="Train / resume training DQN agent for Freewat.")
 
 # Resume training from a saved model checkpoint
 parser.add_argument(     
@@ -51,7 +51,7 @@ args = parser.parse_args()
 # --- 2. Configuration & Hyperparameters ---
 
 # Gym environment to train on
-ENV_ID = "PongNoFrameskip-v4"
+ENV_ID = "FreewayNoFrameskip-v4"
 
 # Tensorboard logs directory
 LOG_DIR = "./logs/"
@@ -127,7 +127,8 @@ if args.load_model is None:
         verbose = 1,
         tensorboard_log = LOG_DIR, 
         device = DEVICE,
-        optimize_memory_usage = True
+        optimize_memory_usage = True,
+        replay_buffer_kwargs = {"handle_timeout_termination": False}
     )
 
 else: 
