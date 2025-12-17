@@ -6,3 +6,7 @@ logs/
 
 # Saved models (handle via Git LFS or external storage)
 models/
+
+# 
+.DS_Store
+src/__pycache__/
